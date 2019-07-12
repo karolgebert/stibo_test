@@ -1,6 +1,5 @@
 package pl.karolgebert.stibo.dao;
 
-import lombok.Getter;
 import org.springframework.stereotype.Repository;
 import pl.karolgebert.stibo.model.Task;
 
@@ -19,7 +18,7 @@ public class TaskRepository extends RepositoryIdGenerator implements Dao<Task> {
 
     @Override
     public List<Task> getAll() {
-        return (List<Task>) tasks.values();
+        return new ArrayList<>(tasks.values());
     }
 
     @Override

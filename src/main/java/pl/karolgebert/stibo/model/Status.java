@@ -7,12 +7,12 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-class Status {
+public class Status {
     private short done;
-    private short planed;
+    private short planned;
 
-    Status(int done, int planed) {
+    public Status(int done, int planned) {
         this.done = (short)done;
-        this.planed = (short)planed;
+        this.planned = (short) planned;
     }
 }
