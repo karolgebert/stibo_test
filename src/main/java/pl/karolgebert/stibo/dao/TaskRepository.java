@@ -9,7 +9,7 @@ import java.util.*;
 public class TaskRepository extends RepositoryIdGenerator implements Dao<Task> {
 
     // <id, task>
-    private Map<Long, Task> tasks = new HashMap<>();
+    private Map<Long, Task> tasks = Collections.synchronizedMap(new HashMap<>());
 
     @Override
     public Optional<Task> get(long id) {
@@ -22,8 +22,11 @@ public class TaskRepository extends RepositoryIdGenerator implements Dao<Task> {
     }
 
     @Override
-    public void save(Task task) {
-        tasks.put(generateId(), task);
+    public Task save(Task task) {
+        Long id = generateId();
+        task.setId(id);
+        tasks.put(id, task);
+        return task;
     }
 
     @Override

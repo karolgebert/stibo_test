@@ -1,5 +1,7 @@
 package pl.karolgebert.stibo.controller;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -7,25 +9,33 @@ import pl.karolgebert.stibo.dao.TaskRepository;
 import pl.karolgebert.stibo.dto.TaskDto;
 import pl.karolgebert.stibo.model.Task;
 
+import javax.annotation.PostConstruct;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/task")
 public class TaskController implements CrudController<Task, TaskDto> {
     private final TaskRepository taskRepository;
+    private ModelMapper modelMapper = new ModelMapper();
 
     @Autowired
     public TaskController(TaskRepository taskRepository) {
         this.taskRepository = taskRepository;
     }
 
+    @PostConstruct
+    public void init() {
+        this.modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.LOOSE);
+    }
+
     @PostMapping
-    public ResponseEntity create(@RequestBody @Valid TaskDto dto) {
-        Task task = new Task(dto);
-        taskRepository.save(task);
-        return ResponseEntity.ok().build();
+    public TaskDto create(@RequestBody @Valid TaskDto dto) {
+        Task task = modelMapper.map(dto, Task.class);
+        task = taskRepository.save(task);
+        return modelMapper.map(task, TaskDto.class);
     }
 
     @GetMapping
@@ -33,13 +43,13 @@ public class TaskController implements CrudController<Task, TaskDto> {
         return taskRepository
                 .getAll()
                 .stream()
-                .map(task -> new TaskDto(task.getName(), task.getStatus().getDone(), task.getStatus().getPlanned()))
+                .map(task -> modelMapper.map(task, TaskDto.class))
                 .collect(Collectors.toList());
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity update(@PathVariable long id, @RequestBody @Valid TaskDto dto) {
-        taskRepository.update(id, new Task(dto));
+        taskRepository.update(id, modelMapper.map(dto, Task.class));
         return ResponseEntity.ok().build();
     }
 

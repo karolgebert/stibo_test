@@ -6,7 +6,7 @@ import pl.karolgebert.stibo.dto.TaskDto;
 import java.util.List;
 
 public interface CrudController<T, D> {
-    ResponseEntity create(D dto);
+    D create(D dto);
     List<TaskDto> read();
     ResponseEntity update(long id, D dto);
     ResponseEntity delete(long id);

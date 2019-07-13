@@ -44,7 +44,7 @@ public class TaskControllerTest {
     public void testCreateEndpoint() throws Exception {
         // GIVEN
         String url = "/task";
-        TaskDto task = new TaskDto("Test", (short) 0, (short) 4);
+        TaskDto task = new TaskDto(null, "Test", (short) 0, (short) 4);
 
         // WHEN
         mockMvc.perform(
@@ -68,7 +68,7 @@ public class TaskControllerTest {
         // GIVEN
         String url = "/task";
         Mockito.when(taskRepository.getAll()).thenReturn(
-                Collections.singletonList(new Task("Test", new Status(0, 4)))
+                Collections.singletonList(new Task(1L, "Test", new Status(0, 4)))
         );
 
         // WHEN
@@ -76,14 +76,14 @@ public class TaskControllerTest {
 
         // THEN
         .andExpect(status().isOk())
-        .andExpect(content().json("[{name: \"Test\", \"done\": 0, \"planned\": 4}]"));
+        .andExpect(content().json("[{\"id\": 1, \"name\": \"Test\", \"done\": 0, \"planned\": 4}]"));
     }
 
     @Test
     public void testUpdateEndpoint() throws Exception {
         // GIVEN
         String url = "/task/1";
-        TaskDto task = new TaskDto("Test", (short) 1, (short) 4);
+        TaskDto task = new TaskDto(1L, "Test", (short) 1, (short) 4);
 
         // WHEN
         mockMvc.perform(put(url)
@@ -117,27 +117,27 @@ public class TaskControllerTest {
 
     @Test
     public void testValidationEmptyName() throws Exception {
-        testValidation(new TaskDto("", (short) 0, (short) 4), (String url) -> post(url));
+        testValidation(new TaskDto(null, "", (short) 0, (short) 4), (String url) -> post(url));
     }
 
     @Test
     public void testValidationNullName() throws Exception {
-        testValidation(new TaskDto(null, (short) 0, (short) 4), (String url) -> post(url));
+        testValidation(new TaskDto(null, null, (short) 0, (short) 4), (String url) -> post(url));
     }
 
     @Test
     public void testValidationDoneOutOfRange() throws Exception {
-        testValidation(new TaskDto("Test", (short) 5, (short) 4), (String url) -> post(url));
+        testValidation(new TaskDto(null, "Test", (short) 5, (short) 4), (String url) -> post(url));
     }
 
     @Test
     public void testValidationPlannedOutOfRange() throws Exception {
-        testValidation(new TaskDto("Test", (short) 0, (short) 5), (String url) -> post(url));
+        testValidation(new TaskDto(null, "Test", (short) 0, (short) 5), (String url) -> post(url));
     }
 
     @Test
     public void testValidationOnPut() throws Exception {
-        testValidation(new TaskDto("", (short) 5, (short) 5), (String url) -> put(url.concat("/1")));
+        testValidation(new TaskDto(1L, "", (short) 5, (short) 5), (String url) -> put(url.concat("/1")));
     }
 
     private void testValidation(TaskDto task, Function<String, MockHttpServletRequestBuilder> requestMethod) throws Exception {

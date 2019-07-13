@@ -14,6 +14,7 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 public class TaskDto {
+    private Long id;
     @NotEmpty
     private String name;
     @Min(0)
